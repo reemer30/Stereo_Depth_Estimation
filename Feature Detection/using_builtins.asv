@@ -1,0 +1,10 @@
+IMG1_PATH = 'shelf1.png';
+IMG2_PATH = 'shelf0.png';
+% read in image and grayscale it
+I = rgb2gray(imread(IMG1_PATH));
+J = rgb2gray(imread(IMG2_PATH));
+
+points1 = detectHarrisFeatures(I1);
+points2 = detectHarrisFeature(I2);
+
+[features1, valid_

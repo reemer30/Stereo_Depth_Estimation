@@ -1,5 +1,5 @@
-IMG1_PATH = 'pipe1.png';
-IMG2_PATH = 'pipe0.png';
+IMG1_PATH = 'bike1.png';
+IMG2_PATH = 'bike0.png';
 % read in image and grayscale it
 I = rgb2gray(imread(IMG1_PATH));
 J = rgb2gray(imread(IMG2_PATH));
@@ -7,8 +7,8 @@ I_C = imread(IMG1_PATH);
 J_C = imread(IMG2_PATH);
 
 % Using Harris Feature Points
-points1 = detectHarrisFeatures(I);
-points2 = detectHarrisFeatures(J);
+points1 = detectSURFFeatures(I);
+points2 = detectSURFFeatures(J);
 
 [features1, valid_points1] = extractFeatures(I, points1);
 [features2, valid_points2] = extractFeatures(J, points2);

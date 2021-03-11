@@ -69,3 +69,45 @@ color = [0, 255, 0];
 depth_color = depth_vals(:,1).*color;
 mark_pipes = insertMarker(I_C, depth_vals(:,2:3), 'x', 'color', depth_color, 'size', 50);
 figure; imshow(mark_pipes); title("Marked Pipes 2")
+%% 3d Plot?
+threedee_points = cat(2, matchedPoints2.Location, distanceInMeters);
+figure;
+heights = sqrt(max(threedee_points(:,3)) - threedee_points(:,3)) ;
+plot3(threedee_points(:,1),threedee_points(:,2),heights, '.');
+hold on;      % Add to the plot
+xlabel('x');
+ylabel('y');
+zlabel('z');
+img = imread('pipe0.png');     % Load a sample image
+xImage = [0 2960; 0 2960];   % The x data for the image corners
+yImage = [0 0; 1924 1924];             % The y data for the image corners
+zImage = [0 0; 0 0];   % The z data for the image corners
+surf(xImage,yImage,zImage,...    % Plot the surface
+     'CData',img,...
+     'FaceColor','texturemap');
+ 
+ %%
+figure;
+xy = double(threedee_points(:, 1:2));
+x = double(threedee_points(:,1));
+y = double(threedee_points(:,2));
+%v = double(threedee_points(:,3));
+v = double(heights);
+[xq,yq] = meshgrid(0:1:2960, 0:1:1924);
+vq = griddata(x,y,v,xq,yq,'Natural');
+
+mesh(xq,yq,vq)
+hold on
+%plot3(x,y,v,'o')
+
+hold on;      % Add to the plot
+xlabel('x');
+ylabel('y');
+zlabel('z');
+img = imread('pipe0.png');     % Load a sample image
+xImage = [0 2960; 0 2960];   % The x data for the image corners
+yImage = [0 0; 1924 1924];             % The y data for the image corners
+zImage = [0 0; 0 0];   % The z data for the image corners
+surf(xImage,yImage,zImage,...    % Plot the surface
+     'CData',img,...
+     'FaceColor','texturemap');

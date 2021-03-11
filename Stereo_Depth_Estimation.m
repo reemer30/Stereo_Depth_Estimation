@@ -1,5 +1,5 @@
-IMG1_PATH = 'pipe1.png';
-IMG2_PATH = 'pipe0.png';
+IMG1_PATH = 'bike1.png';
+IMG2_PATH = 'bike0.png';
 % read in image and grayscale it
 I = rgb2gray(imread(IMG1_PATH));
 J = rgb2gray(imread(IMG2_PATH));

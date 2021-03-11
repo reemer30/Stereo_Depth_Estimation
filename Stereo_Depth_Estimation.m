@@ -1,5 +1,5 @@
-IMG1_PATH = 'bike1.png';
-IMG2_PATH = 'bike0.png';
+IMG1_PATH = 'pipe1.png';
+IMG2_PATH = 'pipe0.png';
 % read in image and grayscale it
 I = rgb2gray(imread(IMG1_PATH));
 J = rgb2gray(imread(IMG2_PATH));
@@ -17,21 +17,31 @@ indexPairs = matchFeatures(features1, features2);
 
 matchedPoints1 = valid_points1(indexPairs(:,1),:);
 matchedPoints2 = valid_points2(indexPairs(:,2),:);
+%%
+matches1 = []
+matches2 = []
+for N = 1:size(matchedPoints1.Location, 1) 
+    if (abs(matchedPoints1.Location(N, 2) - matchedPoints2.Location(N, 2))) < 20
+        matches1 = cat(1, matches1, matchedPoints1.Location(N,:));
+        matches2 = cat(1, matches2, matchedPoints2.Location(N,:));
+    end
+end
 
+%%
 % Display the Matched Features
-figure; showMatchedFeatures(I,J,matchedPoints1,matchedPoints2);
+figure; showMatchedFeatures(I,J,matches1,matches2);
 title("Matched Features");
-
+%%
 % More built-ins time
 % Camera Intrinsic Matrixcies: [fx 0 0; 1 fy 0; cx cy 1; 0 0 1]
 cameraMatrix1 = [3968.297 0  0; 1 3968.297 0; 1188.925 979.657 1; 0 0 1];
 cameraMatrix2 = [3968.297 0  0; 1 3968.297 0; 1266.14 979.657 1; 0 0 1];
 
 % Extract the 3D World coordinates
-worldPoints = triangulate(matchedPoints1.Location, matchedPoints2.Location,...
+worldPoints = triangulate(matches1, matches2,...
   cameraMatrix1, cameraMatrix2);
 
-len = length(matchedPoints1);
+len = length(matches1);
 distanceInMeters = zeros (len, 1);
 
 % Compute the depth in meters
@@ -42,9 +52,9 @@ end
 
 % Add the depth measurements to both images 
 for N = 1:len
-    I_C = insertObjectAnnotation(I_C, 'rectangle', [matchedPoints1.Location(N, :) 5 5] , sprintf('%0.3f m',distanceInMeters(N)), ...
+    I_C = insertObjectAnnotation(I_C, 'rectangle', [matches1(N, :) 5 5] , sprintf('%0.3f m',distanceInMeters(N)), ...
     'FontSize', 18);
-    J_C = insertObjectAnnotation(J_C, 'rectangle', [matchedPoints2.Location(N, :) 5 5], sprintf('%0.3f m',distanceInMeters(N)), ...
+    J_C = insertObjectAnnotation(J_C, 'rectangle', [matches2(N, :) 5 5], sprintf('%0.3f m',distanceInMeters(N)), ...
     'FontSize', 18);
 %     I = insertShape(I, 'FilledRectangle', matchedPoints1(N, :)');
 %     J = insertShape(J, 'FilledRectangle', matchedPoints2(N, :)');
@@ -54,7 +64,7 @@ title("Depth of Matched Points for Both Images")
 
 figure; imshow(I_C); title("Depth of Matched Points for a Single Image")
 
-
+%%
 % Only relevant if we do not use the triangulate builtin
 pipe_base = 236.922;
 pipe_focal = 3968.297;

@@ -7,8 +7,8 @@ I_C = imread(IMG1_PATH);
 J_C = imread(IMG2_PATH);
 
 % Using Harris Feature Points
-points1 = detectHarrisFeatures(I);
-points2 = detectHarrisFeatures(J);
+points1 = detectSURFFeatures(I);
+points2 = detectSURFFeatures(J);
 
 [features1, valid_points1] = extractFeatures(I, points1);
 [features2, valid_points2] = extractFeatures(J, points2);
@@ -17,21 +17,31 @@ indexPairs = matchFeatures(features1, features2);
 
 matchedPoints1 = valid_points1(indexPairs(:,1),:);
 matchedPoints2 = valid_points2(indexPairs(:,2),:);
+%%
+matches1 = []
+matches2 = []
+for N = 1:size(matchedPoints1.Location, 1) 
+    if (abs(matchedPoints1.Location(N, 2) - matchedPoints2.Location(N, 2))) < 20
+        matches1 = cat(1, matches1, matchedPoints1.Location(N,:));
+        matches2 = cat(1, matches2, matchedPoints2.Location(N,:));
+    end
+end
 
+%%
 % Display the Matched Features
-figure; showMatchedFeatures(I,J,matchedPoints1,matchedPoints2);
+figure; showMatchedFeatures(I,J,matches1,matches2);
 title("Matched Features");
-
+%%
 % More built-ins time
 % Camera Intrinsic Matrixcies: [fx 0 0; 1 fy 0; cx cy 1; 0 0 1]
 cameraMatrix1 = [3968.297 0  0; 1 3968.297 0; 1188.925 979.657 1; 0 0 1];
 cameraMatrix2 = [3968.297 0  0; 1 3968.297 0; 1266.14 979.657 1; 0 0 1];
 
 % Extract the 3D World coordinates
-worldPoints = triangulate(matchedPoints1.Location, matchedPoints2.Location,...
+worldPoints = triangulate(matches1, matches2,...
   cameraMatrix1, cameraMatrix2);
 
-len = length(matchedPoints1);
+len = length(matches1);
 distanceInMeters = zeros (len, 1);
 
 % Compute the depth in meters
@@ -42,9 +52,9 @@ end
 
 % Add the depth measurements to both images 
 for N = 1:len
-    I_C = insertObjectAnnotation(I_C, 'rectangle', [matchedPoints1.Location(N, :) 5 5] , sprintf('%0.3f m',distanceInMeters(N)), ...
+    I_C = insertObjectAnnotation(I_C, 'rectangle', [matches1(N, :) 5 5] , sprintf('%0.3f m',distanceInMeters(N)), ...
     'FontSize', 18);
-    J_C = insertObjectAnnotation(J_C, 'rectangle', [matchedPoints2.Location(N, :) 5 5], sprintf('%0.3f m',distanceInMeters(N)), ...
+    J_C = insertObjectAnnotation(J_C, 'rectangle', [matches2.Location(N, :) 5 5], sprintf('%0.3f m',distanceInMeters(N)), ...
     'FontSize', 18);
 %     I = insertShape(I, 'FilledRectangle', matchedPoints1(N, :)');
 %     J = insertShape(J, 'FilledRectangle', matchedPoints2(N, :)');
@@ -69,45 +79,3 @@ color = [0, 255, 0];
 depth_color = depth_vals(:,1).*color;
 mark_pipes = insertMarker(I_C, depth_vals(:,2:3), 'x', 'color', depth_color, 'size', 50);
 figure; imshow(mark_pipes); title("Marked Pipes 2")
-%% 3d Plot?
-threedee_points = cat(2, matchedPoints2.Location, distanceInMeters);
-figure;
-heights = sqrt(max(threedee_points(:,3)) - threedee_points(:,3)) ;
-plot3(threedee_points(:,1),threedee_points(:,2),heights, '.');
-hold on;      % Add to the plot
-xlabel('x');
-ylabel('y');
-zlabel('z');
-img = imread('pipe0.png');     % Load a sample image
-xImage = [0 2960; 0 2960];   % The x data for the image corners
-yImage = [0 0; 1924 1924];             % The y data for the image corners
-zImage = [0 0; 0 0];   % The z data for the image corners
-surf(xImage,yImage,zImage,...    % Plot the surface
-     'CData',img,...
-     'FaceColor','texturemap');
- 
- %%
-figure;
-xy = double(threedee_points(:, 1:2));
-x = double(threedee_points(:,1));
-y = double(threedee_points(:,2));
-%v = double(threedee_points(:,3));
-v = double(heights);
-[xq,yq] = meshgrid(0:1:2960, 0:1:1924);
-vq = griddata(x,y,v,xq,yq,'Natural');
-
-mesh(xq,yq,vq)
-hold on
-%plot3(x,y,v,'o')
-
-hold on;      % Add to the plot
-xlabel('x');
-ylabel('y');
-zlabel('z');
-img = imread('pipe0.png');     % Load a sample image
-xImage = [0 2960; 0 2960];   % The x data for the image corners
-yImage = [0 0; 1924 1924];             % The y data for the image corners
-zImage = [0 0; 0 0];   % The z data for the image corners
-surf(xImage,yImage,zImage,...    % Plot the surface
-     'CData',img,...
-     'FaceColor','texturemap');

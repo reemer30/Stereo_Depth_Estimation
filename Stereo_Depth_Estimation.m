@@ -1,5 +1,5 @@
-IMG1_PATH = 'bike1.png';
-IMG2_PATH = 'bike0.png';
+IMG1_PATH = 'pipe1.png';
+IMG2_PATH = 'pipe0.png';
 % read in image and grayscale it
 I = rgb2gray(imread(IMG1_PATH));
 J = rgb2gray(imread(IMG2_PATH));
@@ -77,6 +77,11 @@ figure; imshowpair(I_C, J_C, 'montage');
 title("Depth of Matched Points for Both Images")
 
 figure; imshow(I_C); title("Depth of Matched Points for a Single Image")
+%%
+DM = create_depth_map(double(I), true_matches2, true_distanceInMeters);
+figure; imshow(DM,[])
+%%
+figure; imshow(DM)
 
 %%
 % Only relevant if we do not use the triangulate builtin

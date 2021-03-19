@@ -39,44 +39,43 @@ function [depth_map] = create_depth_map(input_img, match_pts, depths)
 %             end      
 
 %     
-    for i = 1:rows        
-        for j = 1:cols
-%             if  depth_map(i,j) == 0
-                
-                curr_mat = repmat([j i], len_match, 1);
-                diff_x = curr_mat(:,1) - match_pts(:,1);
-                diff_y = curr_mat(:,2) - match_pts(:,2);
-                sq_diff = diff_x.^2 + diff_y.^2;
-                %SSD = sum(sq_diff, 'all');
-                %dist = sq_diff.^(1/2);
-                [min_val, min_idx] = min(sq_diff);
-                
-%                 if min_idx(1) ~= min_idx(2)
-%                     if min_val(1) < min_val(2)
-%                         depth_map(i,j) = depths(min_idx(1));
-%                     else
-%                         depth_map(i,j) = depths(min_idx(2));
-%                     end
-%                 else 
-                    depth_map(i,j) = depths(min_idx(1));
-%                 end
-%             end
-        end        
-    end
-    
 %     for i = 1:rows        
 %         for j = 1:cols
-%             for k = 1:len_match
-%                 neighbor_distances(k) = euclidean_dist([i j], match_pts(k, :));
-%                 diff(k, :) = [i j] - match_pts(k, :);
-%                 dist(k) = sum(diff(k,:))
-%             end
-%             [min_val, min_idx] = min(dist);
-%             depth_map(i,j) = depths(min_idx);
+% %             if  depth_map(i,j) == 0
+%                 curr_mat = input_img(i,j).*ones(len_match, 2);
+%                 diff_x = curr_mat(:,1) - match_pts(:,1);
+%                 diff_y = curr_mat(:,2) - match_pts(:,2);
+%                 sq_diff = diff_x.^2 + diff_y.^2;
+%                 %SSD = sum(sq_diff, 'all');
+%                 %dist = sq_diff.^(1/2);
+%                 [min_val, min_idx] = min(sq_diff);
+%                 
+% %                 if min_idx(1) ~= min_idx(2)
+% %                     if min_val(1) < min_val(2)
+% %                         depth_map(i,j) = depths(min_idx(1));
+% %                     else
+% %                         depth_map(i,j) = depths(min_idx(2));
+% %                     end
+% %                 else 
+%                     depth_map(i,j) = depths(min_idx(1));
+% %                 end
+% %             end
 %         end        
-%     end    
+%     end
+    
+    for i = 1:rows        
+        for j = 1:cols
+            for k = 1:len_match
+                %neighbor_distances(k) = euclidean_dist([i j], match_pts(k, :));
+                diff = [i j] - match_pts(k, :);
+                dist = sum(diff(k,:))
+            end
+            [min_val, min_idx] = min(neighbor_distances)
+            depth_map(i,j) = depths(min_idx)
+        end        
+    end    
     
     % Normalize depths
-    % depth_map = depth_map./(max(depth_map));
+    depth_map = depth_map./(max(depth_map));
 end
 

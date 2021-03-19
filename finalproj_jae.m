@@ -46,8 +46,10 @@ disparityMap1 = disparityBM(im1, im2, 'DisparityRange', d_range1, 'UniquenessThr
 disparityMap_filtered = rmmissing(disparityMap1, 2);
 H = fspecial('average', 5);
 disparityMap_filtered = imfilter(disparityMap_filtered, H);
+H = fspecial('gaussian', 5);
+disparityMap_filtered = imfilter(disparityMap_filtered, H);
 
-disparityMap_resized = imresize(disparityMap_filtered, 0.1, 'nearest');
+disparityMap_resized = imresize(disparityMap_filtered, 0.05, 'nearest');
 
 [m, n] = size(disparityMap_resized);
 
@@ -61,12 +63,24 @@ disparityMap_resized = imresize(disparityMap_filtered, 0.1, 'nearest');
 %         d= disparityMap_resized(i,j);
 %         
 %         
+% 
+% X = (1:1940)';
+% X = repmat(X,1,2933);
+% 
+% Y = (1:2933);
+% Y = repmat(Y,1940,1);
 
-X = (1:194)';
-X = repmat(X,1,294);
+X = (1:97)';
+X = repmat(X,1,147);
 
-Y = (1:294);
-Y = repmat(Y,194,1);
+Y = (1:147);
+Y = repmat(Y,97,1);
+
+surf(X,Y,disparityMap_resized);
+
+% imshow(disparityMap_filtered, d_range1)
+
+% stem3(X, Y, Z);
 
 % dmap = zeros(m,n);
 % dmap(:,:,1) = X;
@@ -75,40 +89,16 @@ Y = repmat(Y,194,1);
 
 Z = disparityMap_resized;
 
-% 
+
+
+
+
 % surface(X,Y,Z);
 % figure;
 % imshow(disparityMap_resized, d_range1);
 % 
 % figure;
 % plot3(X,Y,disparityMap_resized);
-
-
-
-
-
-
-
-
-% 
-% imshow(disparityMap_resized, d_range1);
-
-
-
-        
-        
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

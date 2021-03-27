@@ -10,7 +10,7 @@ d_range2 = disp_range_filter(im1, im2, 290);
 d_range3 = disp_range_filter(im1, im2, 300);
 d_range4 = disp_range_filter(im1, im2, 320);
 
-disparityMap1 = disparitySGM(im1, im2, 'DisparityRange', d_range1, 'UniquenessThreshold', 10);
+disparityMap1 = disparityBM(im1, im2, 'DisparityRange', d_range1, 'UniquenessThreshold', 10);
 disparityMap2 = disparityBM(im1, im2, 'DisparityRange', d_range2, 'UniquenessThreshold', 10);
 disparityMap3 = disparityBM(im1, im2, 'DisparityRange', d_range3, 'UniquenessThreshold', 10);
 disparityMap4 = disparityBM(im1, im2, 'DisparityRange', d_range4, 'UniquenessThreshold', 10);
@@ -47,7 +47,7 @@ disparityMap_filtered = imfilter(disparityMap_filtered, H);
 [M,N] = size(disparityMap_filtered);
 f = 3997.684; %in pixels
 baseline = 193.001; %camera baseline in mm
-doffs=131.111; % x difference of pricipal points
+doffs=131.111; %
 dist = repmat((f*baseline),M,N);
 
 %distance(in meters) = f*baseline/((disparity+doffs)*1000)
